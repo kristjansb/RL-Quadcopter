@@ -27,6 +27,8 @@ class Takeoff(BaseTask):
         # Task-specific parameters
         self.max_duration = 5.0  # secs
         self.target_z = 10.0  # target height (z position) to reach for successful takeoff
+        # self.max_error_position = 15.0
+        # self.target_position = np.array([0.0, 0.0, 10.0])  # target height (z position) to reach for successful takeoff
 
     def reset(self):
         # Nothing to reset; just return initial condition
@@ -40,14 +42,19 @@ class Takeoff(BaseTask):
 
     def update(self, timestamp, pose, angular_velocity, linear_acceleration):
         # Prepare state vector (pose only; ignore angular_velocity, linear_acceleration)
+        # position = np.array([pose.position.x, pose.position.y, pose.position.z])
         state = np.array([
                 pose.position.x, pose.position.y, pose.position.z,
                 pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w])
 
+        # error_position = np.linalg.norm(self.target_position - state[0:3])  # Euclidean distance from target position vector
+        
         # Compute reward / penalty and check if this episode is complete
         done = False
         reward = -min(abs(self.target_z - pose.position.z), 20.0)  # reward = zero for matching target z, -ve as you go farther, upto -20
+        # reward = -min(abs(error_position), 20.0)  # reward = zero for matching target z, -ve as you go farther, upto -20
         if pose.position.z >= self.target_z:  # agent has crossed the target height
+        # if pose.position.z >= self.target_position[2]:  # agent has crossed the target height
             reward += 10.0  # bonus reward
             done = True
         elif timestamp > self.max_duration:  # agent has run out of time

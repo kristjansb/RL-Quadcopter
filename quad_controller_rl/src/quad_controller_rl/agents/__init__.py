@@ -1,2 +1,4 @@
 from quad_controller_rl.agents.base_agent import BaseAgent
 from quad_controller_rl.agents.policy_search import RandomPolicySearch
+from quad_controller_rl.agents.constrained_agent import ConstrainedAgent
+from quad_controller_rl.agents.policy_gradient import DDPG
